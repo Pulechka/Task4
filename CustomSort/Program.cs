@@ -20,7 +20,7 @@ namespace CustomSort
             int[] arrayInt = new int[] { 98, 34,8,-3, 873, -23, 54, 293, 0, -87, 395};
             ArrayWorker.PrintArray<int>(arrayInt);
 
-            CompareTwoObjects<int> compareInt = CompareInt;
+            CompareTwoObjects<int> compareInt = null;// = CompareInt;
             ArrayWorker.SortArray<int>(arrayInt, compareInt);
             ArrayWorker.PrintArray<int>(arrayInt);
         }

@@ -7,23 +7,30 @@ using System.Threading.Tasks;
 namespace CustomSort
 {
     public static class ArrayWorker
-    { 
+    {
 
         public static void SortArray<T>(T[] array, CompareTwoObjects<T> compare)
         {
-            for (int i = 0; i < array.Length; i++)
+            if (compare != null)
             {
-                for (int j = 0; j < array.Length-1; j++)
+                for (int i = 0; i < array.Length; i++)
                 {
-                    if (compare(array[j],array[j + 1]) > 0)
+                    for (int j = 0; j < array.Length - 1; j++)
                     {
-                        T temp = array[j];
-                        array[j] = array[j + 1];
-                        array[j + 1] = temp;
+                        if (compare(array[j], array[j + 1]) > 0)
+                        {
+                            T temp = array[j];
+                            array[j] = array[j + 1];
+                            array[j + 1] = temp;
+                        }
                     }
                 }
+
             }
+            else
+                Console.WriteLine("Comparison principle is not define");
         }
+    
 
 
         public static void PrintArray<T>(T[] array)
