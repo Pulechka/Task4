@@ -67,10 +67,10 @@ namespace CustomSort
             if (str1.Length == str2.Length)
                 return (str1[0] - str2[0]);
             else
-                return (str1.Length > str2.Length) ? 1 : -1;
+                return str1.Length - str2.Length;
         }
 
 
-        private static int CompareInt(int val1, int val2) => (val1 > val2) ? 1 : -1;
+        private static int CompareInt(int val1, int val2) => val1 - val2;
     }
 }
