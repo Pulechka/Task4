@@ -22,8 +22,7 @@ namespace CustomSort
             int[] arrayInt = new int[] { 98, 34, 8, -3, 873, -23, 54, 293, 0, -87, 395 };
             PrintArray(arrayInt);
 
-            CompareTwoObjects<int> compareInt  = CompareInt;
-            SortArray(arrayInt, compareInt);
+            SortArray(arrayInt, new CompareTwoObjects<int>(CompareInt));
             PrintArray(arrayInt);
         }
 

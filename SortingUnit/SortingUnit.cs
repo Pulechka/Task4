@@ -6,29 +6,13 @@ using System.Threading;
 
 namespace SortingUnitTask
 {
-    public delegate int CompareTwoObjects<T>(T obj1, T obj2);
-
-    public class SortingUnit
+    public class SortingUnit<T>
     {
-        public event EventHandler<SortResultEventArgs> SortCompleted;
+        public delegate void Sorting(T[] arr);
 
-        public class SortResultEventArgs : EventArgs
-        {
-            public string ResultDescription { get; }
+        public static event Sorting SortCompleted;
 
-            public SortResultEventArgs(string resDescription)
-            {
-                ResultDescription = resDescription;
-            }
-        }
-
-        protected virtual void onSortComleted()
-        {
-            SortCompleted?.Invoke(this, new SortResultEventArgs(""));
-        }
-     
-
-        public void SortArray<T>(T[] array, CompareTwoObjects<T> compareResult)
+        public static void SortArray(T[] array, Func<T, T, int> compareResult)
         {
             if (compareResult != null)
             {
@@ -44,17 +28,10 @@ namespace SortingUnitTask
                         }
                     }
                 }
-                onSortComleted();
+                SortCompleted?.Invoke(array);
             }
             else
                 Console.WriteLine("Comparison principle is not define");
-        }
-
-
-        public void SortArrayInThread<T>(T[] array, CompareTwoObjects<T> compareResult, ref Thread th)
-        {
-            th = new Thread(()=>SortArray(array, compareResult));
-            th.Start();
-        }
+        }     
     }
 }

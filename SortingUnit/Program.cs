@@ -10,41 +10,45 @@ namespace SortingUnitTask
     {
         static void Main(string[] args)
         {
-            SortingUnit su = new SortingUnit();
-            su.SortCompleted += GetSortResult;
+            SortingUnit<int>.SortCompleted += ShowSortResult;
+            SortingUnit<string>.SortCompleted += ShowSortResult;
 
-            string[] arrayString = new string[] { "зима", "весна", "лето", "осень", "ёж", "модернизация", "Осень", "палата", "ток", "обвал", "кот", };
-            PrintArray(arrayString);
+            int[] intArray = CreateNumericArray(100);
+            Console.WriteLine("Input array:");
+            PrintArray(intArray);
+            Console.WriteLine();
+            SortArrayInThread(intArray, CompareInt);
 
-            CompareTwoObjects<string> compareString = CompareStringByLength;
-            su.SortArray(arrayString, compareString);
-            PrintArray(arrayString);
-
-            Console.WriteLine("---------------------------------------------------------------------");
-
-            int[] arrayInt = new int[] { 98, 34, 8, -3, 873, -23, 54, 293, 0, -87, 395, };
-            PrintArray(arrayInt);
-
-            CompareTwoObjects<int> compareInt = CompareInt;
-            Thread th = null;
-            su.SortArrayInThread(arrayInt, compareInt, ref th);
-            PrintArray(arrayInt);
-            th.Join();
-            PrintArray(arrayInt);
+            string[] strArray = new string[] { "зима", "весна", "лето", "осень", "ёж", "модернизация", "Осень", "палата", "ток", "обвал", "кот", };
+            Console.WriteLine("Input array:");
+            PrintArray(strArray);
+            Console.WriteLine();
+            SortArrayInThread(strArray, CompareStringByLength);
         }
 
+        public static void SortArrayInThread<T>(T[] array, Func<T, T, int> compareResult)
+        {
+            Thread th = new Thread(() => SortingUnit<T>.SortArray(array, compareResult));
+            th.Start();
+        }
 
+        public static void ShowSortResult<T>(T[] array)
+        {
+            Console.WriteLine(new string('-', 100));
+            Console.WriteLine($"Sorting of array is completed");
+            PrintArray(array);
+            Console.WriteLine(new string('-', 100));
+        }
+
+        private static int CompareInt(int val1, int val2) => (val1 > val2) ? 1 : -1;
 
         private static int CompareStringByLength(string str1, string str2)
         {
             if (str1.Length == str2.Length)
                 return (str1[0] - str2[0]);
             else
-                return (str1.Length > str2.Length) ? 1 : -1;
+                return str1.Length - str2.Length;
         }
-
-
-        private static int CompareInt(int val1, int val2) => (val1 > val2) ? 1 : -1;
 
 
         private static void PrintArray<T>(T[] array)
@@ -56,9 +60,16 @@ namespace SortingUnitTask
             Console.WriteLine();
         }
 
-        public static void GetSortResult(object sender, EventArgs e)
+
+        private static int[] CreateNumericArray(int length)
         {
-            Console.WriteLine($"Sort array is completed {sender}");
+            int[] arr = new int[length];
+            Random rnd = new Random();
+            for (int i = 0; i < length; i++)
+            {
+                arr[i] = rnd.Next(-1000, 1000);
+            }
+            return arr;
         }
     }
 }
