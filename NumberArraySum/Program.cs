@@ -15,7 +15,6 @@ namespace NumberArraySum
 
             double[] arrDouble = new double[] { 0.4, 2.61, 0.9, 0.06};
             Console.WriteLine($"Sum of the array elements is {arrDouble.GetSum()}");
-
         }
     }
 }

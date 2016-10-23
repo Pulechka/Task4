@@ -9,82 +9,141 @@ namespace ISeekYou
 {
     class Program
     {
-        public delegate bool MatchConndition<T>(T item);
+        public delegate bool MatchConndition(int num);
 
         static void Main(string[] args)
         {
-            List<int> arr1 = new List<int> { 0,-9,54,7,-4,8,-34,7,-54,-4,76,34};
+            int[] arr1 = CreateNumericArray(1000);
+            int[] arr2 = new int[1000];
+            int[] arr3 = new int[1000];
+            int[] arr4 = new int[1000];
+            int[] arr5 = new int[1000];
 
-            List<int> positive1 = FindAllPositive(arr1);
-            Console.WriteLine("All positive (method):");
-            foreach (var item in positive1)         
-            {
-                Console.Write(item+" ");
-            }
-            Console.WriteLine("\n");
-
-
-            List<int> negative2 = FindByCondition(arr1, new MatchConndition<int>(IsNegative));
-            Console.WriteLine("All positive (delegate instance):");
-            foreach (var item in negative2)
-            {
-                Console.Write(item + " ");
-            }
-            Console.WriteLine("\n");
-
-            List<int> negativeAnonym3 = FindByCondition(arr1, delegate(int item) { return item > 0; });
-            Console.WriteLine("All positive (anonym):");
-            foreach (var item in negativeAnonym3)
-            {
-                Console.Write(item + " ");
-            }
-            Console.WriteLine("\n");
-
-            List<int> negativeAnonym4 = FindByCondition(arr1, (x) => (x > 0));
-            Console.WriteLine("All positive (lymbda):");
-            foreach (var item in negativeAnonym4)
-            {
-                Console.Write(item + " ");
-            }
-            Console.WriteLine("\n");
+            arr1.CopyTo(arr2, 0);
+            arr1.CopyTo(arr3, 0);
+            arr1.CopyTo(arr4, 0);
+            arr1.CopyTo(arr5, 0);
 
 
-
-            List<string> arr2 = new List<string> { "зима", "Весна", "лето", "осень", "Ёж", "модернизация", "палата", "Ток", "обвал", "кот", };
-
-            List<string> withCapital = FindByCondition(arr2, new MatchConndition<string>(IsWithCapital));
-            Console.WriteLine("Words with capital first letter:");
-            foreach (var item in withCapital)
-            {
-                Console.Write(item + " ");
-            }
-            Console.WriteLine("\n-------------------------------------------------------------------------");
-
-
-
-
-            List<int> inputData = new List<int>();
-            Random r = new Random();
-            for (int i = 0; i < 500; i++)
-            {
-                inputData.Add(r.Next(-100, 100));
-            }
-            List<int> result;
-
-            
-            Stopwatch watch = new Stopwatch();
-            for (int i = 0; i < 20; i++)
-            {
-                watch.Start();
-                result = FindAllPositive(inputData);
-                watch.Stop();
-                Console.WriteLine(watch.Elapsed);
-                watch.Reset();
-            }
+            int watchCount = 20;
+            GetWatchResultByMethod(arr1, watchCount);
+            GetWatchResultByDelgate(arr2, watchCount);
+            GetWatchResultByAnonymousMethod(arr3, watchCount);
+            GetWatchResultByLymbda(arr4, watchCount);
+            GetWatchResultByLinq(arr5, watchCount);
+            Console.WriteLine();
         }
 
 
-        public static List<int> FindAllPositive(List<int> inputArray) 
+        public static void GetWatchResultByMethod(int[] inputData, int watchCount)
+        {
+            int[] result;
+            Stopwatch watch = new Stopwatch();
+            List<TimeSpan> watchResults = new List<TimeSpan>();
+
+            for (int i = 0; i < watchCount; i++)
+            {
+                watch.Restart();
+                result = FindAllPositive(inputData);
+                watch.Stop();
+                watchResults.Add(watch.Elapsed);
+                watchResults = watchResults.OrderBy(w => w).ToList();
+            }
+            Console.WriteLine($"By method:\t\t\t\t{watchResults[watchCount/2]}");
+        }
+
+        public static void GetWatchResultByDelgate(int[] inputData, int watchCount)
+        {
+            int[] result;
+            Stopwatch watch = new Stopwatch();
+            List<TimeSpan> watchResults = new List<TimeSpan>();
+
+            for (int i = 0; i < watchCount; i++)
+            {
+                watch.Restart();
+                result = FindByCondition(inputData, new MatchConndition(IsNegative));
+                watch.Stop();
+                watchResults.Add(watch.Elapsed);
+                watchResults = watchResults.OrderBy(w => w).ToList();
+            }
+            Console.WriteLine($"By method with delegate:\t\t{watchResults[watchCount / 2]}");
+        }
+
+        public static void GetWatchResultByAnonymousMethod(int[] inputData, int watchCount)
+        {
+            int[] result;
+            Stopwatch watch = new Stopwatch();
+            List<TimeSpan> watchResults = new List<TimeSpan>();
+
+            for (int i = 0; i < watchCount; i++)
+            {
+                watch.Restart();
+                result = FindByCondition(inputData, delegate(int num) { return num > 0; });
+                watch.Stop();
+                watchResults.Add(watch.Elapsed);
+                watchResults = watchResults.OrderBy(w => w).ToList();
+                watch.Reset();
+            }
+            Console.WriteLine($"By method with anonymous method:\t{watchResults[watchCount / 2]}");
+        }
+
+
+        public static void GetWatchResultByLymbda(int[] inputData, int watchCount)
+        {
+            int[] result;
+            Stopwatch watch = new Stopwatch();
+            List<TimeSpan> watchResults = new List<TimeSpan>();
+
+            for (int i = 0; i < watchCount; i++)
+            {
+                watch.Restart();
+                result = FindByCondition(inputData, n=>n>0);
+                watch.Stop();
+                watchResults.Add(watch.Elapsed);
+                watchResults = watchResults.OrderBy(w => w).ToList();
+            }
+            Console.WriteLine($"By method with lymbda:\t\t\t{watchResults[watchCount / 2]}");
+        }
+
+        public static void GetWatchResultByLinq(int[] inputData, int watchCount)
+        {
+            List<int> result = null;
+            Stopwatch watch = new Stopwatch();
+            List<TimeSpan> watchResults = new List<TimeSpan>();
+
+            for (int i = 0; i < watchCount; i++)
+            {
+                watch.Restart();
+                result = inputData.Where(n => n > 0).ToList();
+                watch.Stop();
+                watchResults.Add(watch.Elapsed);
+                watchResults = watchResults.OrderBy(w => w).ToList();
+            }
+            Console.WriteLine($"By method with Linq:\t\t\t{watchResults[watchCount / 2]}");
+        }
+
+        public static void PrintArray(int[] array)
+        {
+            foreach (var item in array)
+            {
+                Console.Write(item + " ");
+            }
+        }
+
+        public static int[] CreateNumericArray(int count)
+        {
+            int[] arr = new int[count];
+            Random r = new Random();
+            for (int i = 0; i < count; i++)
+            {
+                arr[i] = r.Next(-100, 100);
+            }
+            return arr;
+        }
+
+
+
+        public static int[] FindAllPositive(int[] inputArray) 
         {
             List<int> result = new List<int>();
             foreach (var item in inputArray)
@@ -94,31 +153,29 @@ namespace ISeekYou
                     result.Add(item);
                 }
             }
-            return result;
+            return result.ToArray();
         }
 
 
-        public static List<T> FindByCondition<T>(List<T> inputArray, MatchConndition<T> isMatchCondition)
+        public static int[] FindByCondition(int[] inputArray, MatchConndition isMatchCondition)
         {
-            List<T> result = new List<T>();
-            foreach (var item in inputArray)
+            List<int> result = new List<int>();
+            if (isMatchCondition != null)
             {
-                if (isMatchCondition(item))
+                foreach (var item in inputArray)
                 {
-                    result.Add(item);
+                    if (isMatchCondition(item))
+                    {
+                        result.Add(item);
+                    }
                 }
-            } 
-            return result;
+            }
+            return result.ToArray();
         }
 
         public static bool IsNegative(int item)
         {
             return item > 0;
-        }
-
-        public static bool IsWithCapital(string item)
-        {
-            return char.IsUpper(item[0]);
         }
     }
 }
